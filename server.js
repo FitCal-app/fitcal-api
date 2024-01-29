@@ -10,6 +10,8 @@ app.get('/', (req, res) => {
     res.send('Hello node API')
 })
 
+
+// Get all products
 app.get('/products', async(req, res) => {
     try {
         const products = await Product.find({});
@@ -20,6 +22,7 @@ app.get('/products', async(req, res) => {
     }
 })
 
+// Get single product from ID
 app.get('/products/:id', async(req, res) => {
     try {
         const {id} = req.params;
@@ -31,6 +34,7 @@ app.get('/products/:id', async(req, res) => {
     }
 })
 
+// Insert a single product
 app.post('/products', async(req, res) => {
     try {
         const product = await Product.create(req.body);
@@ -40,6 +44,7 @@ app.post('/products', async(req, res) => {
         res.status(500).json({message: error.message});
     }
 })
+
 
 mongoose.connect('mongodb+srv://admin:zhhCF6PCtx7bMP6@fitcal.ywzg4zz.mongodb.net/FitCal-API?retryWrites=true&w=majority')
 .then(() => {
