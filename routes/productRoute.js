@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, getProduct, insertProduct, updateProduct } = require('../controller/productController')
+const { getProducts, getProduct, insertProduct, updateProduct, deleteProduct } = require('../controller/productController')
 
 
 // Get all products
@@ -14,6 +14,9 @@ router.post('/', insertProduct)
 
 // Update a single product              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 router.put('/:id', updateProduct)
+
+// Delete a single product
+router.delete('/:id', deleteProduct)
 
 
 module.exports = router;
