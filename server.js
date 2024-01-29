@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const produstRoute = require('./routes/productRoute');
 const userRoute = require('./routes/userRoute');
+const errorMiddleware = require('./middleware/errorMiddleware');
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use('/api/users', userRoute);
 app.get('/', (req, res) => {
     res.send('Hello node API')
 })
+
+app.use(errorMiddleware);
 
 
 mongoose.connect(MONGO_URL)
