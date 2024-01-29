@@ -1,7 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const Product = require('./models/productModel');
 const app = express();
+
+const MONGO_URL = process.env.MONGO_URL;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -54,7 +58,7 @@ app.put('/products/:id', async(req, res) => {
 
         // Cant find product in db with this id
         if (!product) {
-            return res.status(404).json({message: 'Product not found with ID ${id}'});
+            return res.status(404).json({message: `Product not found with ID ${id}`});
         }
 
         const updatedProduct =  await Product.findById(id);
@@ -66,12 +70,12 @@ app.put('/products/:id', async(req, res) => {
 })
 
 
-mongoose.connect('mongodb+srv://admin:zhhCF6PCtx7bMP6@fitcal.ywzg4zz.mongodb.net/FitCal-API?retryWrites=true&w=majority')
+mongoose.connect(MONGO_URL)
 .then(() => {
     console.log('Connected to MongoDB')
 
-    app.listen(3001, () => {
-        console.log('Listening on port 3001')
+    app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`)
     })
 }).catch((err) => {
     console.log(err)
