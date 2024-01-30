@@ -2,18 +2,6 @@ const Meal = require('../models/mealModel');
 const asyncHandler = require('express-async-handler');
 
 
-// Get meal from ID
-const getMealFromId = asyncHandler(async(req, res) => {
-    try {
-        const {id} = req.params;
-        const meal = await Meal.findById(id);
-        res.status(200).json(meal);
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
-
 // Get meals from Date
 const getMealFromDate = asyncHandler(async (req, res) => {
     try {
@@ -48,9 +36,8 @@ const getMealFromDate = asyncHandler(async (req, res) => {
     }
 });
 
-
 // Get today meals of a user
-const getMealFromCurrentDate = asyncHandler(async(req, res) => {
+const getMealFromCurrentDate = asyncHandler(async (req, res) => {
     try {
         const { user } = req; // Access the user from req.user
 
@@ -77,20 +64,21 @@ const getMealFromCurrentDate = asyncHandler(async(req, res) => {
 const deleteMeal = asyncHandler(async (req, res) => {
     try {
         const { user } = req;
-        const { id } = req.params;
+        const mealId = req.params.mealId;
 
-        const meal = await Meal.findByIdAndDelete(id);
+        // Find the index of the meal in the user's history
+        const mealIndex = user.history.findIndex((meal) => meal._id.toString() === mealId);
 
-        if (!meal) {
+        if (mealIndex === -1) {
             res.status(404);
-            throw new Error(`Cannot find any meal with ID ${id}`);
+            throw new Error(`Cannot find any meal with ID ${mealId}`);
         }
 
         // Remove the deleted meal from the user's history
-        user.history = user.history.filter((meal) => meal._id.toString() !== id);
+        const deletedMeal = user.history.splice(mealIndex, 1)[0];
         await user.save();
 
-        res.status(200).json(meal);
+        res.status(200).json(deletedMeal);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -98,7 +86,6 @@ const deleteMeal = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-    getMealFromId,
     getMealFromDate,
     getMealFromCurrentDate,
     deleteMeal
