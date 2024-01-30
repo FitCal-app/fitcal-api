@@ -15,8 +15,9 @@ const getMealFromId = asyncHandler(async(req, res) => {
 })
 
 // Get meals from Date
-const getMealFromDate = asyncHandler(async(req, res) => {
+const getMealFromDate = asyncHandler(async (req, res) => {
     try {
+        const { user } = req; // Access the user from req.user
         const requestedDate = req.params.date;
 
         // Validate if the requested date is in a valid format (YYYY-MM-DD)
@@ -30,35 +31,35 @@ const getMealFromDate = asyncHandler(async(req, res) => {
         const startDate = new Date(requestedDate + 'T00:00:00.000Z');
         const endDate = new Date(requestedDate + 'T23:59:59.999Z');
 
-        const meal = await Meal.findOne({
-            createdAt: {
-                $gte: startDate,
-                $lt: endDate,
-            },
+        // Find meals in the user's history within the specified date range
+        const meals = user.history.filter((meal) => {
+            const mealCreatedAt = meal.createdAt >= startDate && meal.createdAt <= endDate;
+            return mealCreatedAt;
         });
 
-        if (!meal) {
+        if (!meals.length) {
             res.status(404);
-            throw new Error(`Meal not found for the date: ${requestedDate}`);
+            throw new Error(`No meals found for the date: ${requestedDate}`);
         }
 
-        res.status(200).json(meal);
+        res.status(200).json(meals);
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ error: err.message });
     }
-})
+});
 
-// Get today meals
+
+// Get today meals of a user
 const getMealFromCurrentDate = asyncHandler(async(req, res) => {
     try {
+        const { user } = req; // Access the user from req.user
+
         const currentDate = new Date().toISOString().split('T')[0];
 
-        const meal = await Meal.findOne({
-            createdAt: {
-                $gte: new Date(currentDate + 'T00:00:00.000Z'),
-                $lt: new Date(currentDate + 'T23:59:59.999Z'),
-            },
+        // Find the meal in the user's history for the current date
+        const meal = user.history.find((meal) => {
+            const mealDate = meal.createdAt.toISOString().split('T')[0];
+            return mealDate === currentDate;
         });
 
         if (!meal) {
@@ -72,40 +73,33 @@ const getMealFromCurrentDate = asyncHandler(async(req, res) => {
     }
 });
 
-
-// Insert a meal
-const insertMeal = asyncHandler(async(req, res) => {
-    try {
-        const meal = await Meal.create(req.body);
-        res.status(200).json(meal);
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
-
 // Delete meal
-const deleteMeal = asyncHandler(async(req, res) =>{
+const deleteMeal = asyncHandler(async (req, res) => {
     try {
-        const {id} = req.params;
+        const { user } = req;
+        const { id } = req.params;
+
         const meal = await Meal.findByIdAndDelete(id);
-        if(!meal){
+
+        if (!meal) {
             res.status(404);
-            throw new Error(`cannot find any meal with ID ${id}`);
+            throw new Error(`Cannot find any meal with ID ${id}`);
         }
+
+        // Remove the deleted meal from the user's history
+        user.history = user.history.filter((meal) => meal._id.toString() !== id);
+        await user.save();
+
         res.status(200).json(meal);
-        
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ error: err.message });
     }
-})
+});
 
 
 module.exports = {
     getMealFromId,
     getMealFromDate,
     getMealFromCurrentDate,
-    insertMeal,
     deleteMeal
 }
