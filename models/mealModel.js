@@ -1,21 +1,22 @@
 const mongoose = require('mongoose');
+const Food = require('./foodModel'); // Import the Food model
 
 const mealSchema = mongoose.Schema(
     {
         breakfast: {
-            type: Array,
+            type: [Food.schema],
             required:false
         },
         lunch: {
-            type: Array,
+            type: [Food.schema],
             required: false
         },
         dinner : {
-            type: Array,
+            type: [Food.schema],
             required: false
         },
         snacks: {
-            type: Array,
+            type: [Food.schema],
             required: false
         }
     },

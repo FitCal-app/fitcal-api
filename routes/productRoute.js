@@ -12,7 +12,7 @@ router.get('/:id', getProduct)
 // Insert a single product
 router.post('/', insertProduct)
 
-// Update a single product              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// Update a single product
 router.patch('/:id', updateProduct)
 
 // Delete a single product

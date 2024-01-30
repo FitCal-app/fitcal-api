@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Meal = require('./mealModel'); // Import the Meal model
 
 const userSchema = mongoose.Schema(
     {
@@ -54,7 +55,7 @@ const userSchema = mongoose.Schema(
             }
         },
         history: {
-            type: Array,
+            type: [Meal.schema],
             required: false,
             defaul: []
         },
