@@ -25,11 +25,11 @@ const insertUser = asyncHandler(async(req, res) => {
     }
 })
 
-// Update a single user              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// Update a single user
 const updateUser = asyncHandler(async(req, res) => {
     try {
         const {id} = req.params;
-        const user = await User.findByIdAndUpdate(id, req.body);
+        const user = await User.findByIdAndUpdate(id, req.body, { new: true });
 
         // Cant find user in db with this id
         if (!user) {

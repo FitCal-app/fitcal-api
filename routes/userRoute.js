@@ -9,8 +9,8 @@ router.get('/:id', getUser)
 // Insert a single user
 router.post('/', insertUser)
 
-// Update a single user              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-router.put('/:id', updateUser)
+// Update a single user
+router.patch('/:id', updateUser)
 
 // Delete a single user
 router.delete('/:id', deleteUser)

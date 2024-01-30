@@ -13,7 +13,7 @@ router.get('/:id', getProduct)
 router.post('/', insertProduct)
 
 // Update a single product              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-router.put('/:id', updateProduct)
+router.patch('/:id', updateProduct)
 
 // Delete a single product
 router.delete('/:id', deleteProduct)

@@ -36,11 +36,11 @@ const insertProduct = asyncHandler(async(req, res) => {
     }
 })
 
-// Update a single product              NON FUNZIONAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// Update a single product
 const updateProduct = asyncHandler(async(req, res) => {
     try {
         const {id} = req.params;
-        const product = await Product.findByIdAndUpdate(id, req.body);
+        const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
 
         // Cant find product in db with this id
         if (!product) {
