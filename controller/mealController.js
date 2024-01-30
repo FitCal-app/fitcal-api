@@ -30,7 +30,6 @@ const getMealFromDate = asyncHandler(async(req, res) => {
         const startDate = new Date(requestedDate + 'T00:00:00.000Z');
         const endDate = new Date(requestedDate + 'T23:59:59.999Z');
 
-        // Assuming you have a field named 'createdAt' in your Meal model
         const meal = await Meal.findOne({
             createdAt: {
                 $gte: startDate,
@@ -85,10 +84,28 @@ const insertMeal = asyncHandler(async(req, res) => {
     }
 })
 
+// Delete meal
+const deleteMeal = asyncHandler(async(req, res) =>{
+    try {
+        const {id} = req.params;
+        const meal = await Meal.findByIdAndDelete(id);
+        if(!meal){
+            res.status(404);
+            throw new Error(`cannot find any meal with ID ${id}`);
+        }
+        res.status(200).json(meal);
+        
+    } catch (err) {
+        res.status(500);
+        throw new Error(err.message);
+    }
+})
+
 
 module.exports = {
     getMealFromId,
     getMealFromDate,
     getMealFromCurrentDate,
-    insertMeal
+    insertMeal,
+    deleteMeal
 }
