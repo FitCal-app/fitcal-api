@@ -1,8 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+
 const produstRoute = require('./routes/productRoute');
 const userRoute = require('./routes/userRoute');
+const mealRoute = require('./routes/mealRoute');
+
 const errorMiddleware = require('./middleware/errorMiddleware');
 const cors = require('cors');
 
@@ -25,6 +28,7 @@ app.use(express.urlencoded({extended: false}));
 // Routes
 app.use('/api/products', produstRoute);
 app.use('/api/users', userRoute);
+app.use('/api/meals', mealRoute);
 
 app.get('/', (req, res) => {
     res.send('Hello node API')
