@@ -14,6 +14,25 @@ const getUser = asyncHandler(async(req, res) => {
     }
 })
 
+// Get single user by Email
+const getUserByEmail = asyncHandler(async (req, res) => {
+    try {
+      const { email } = req.params;
+      
+      // Assuming you have a 'User' model defined using Mongoose
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+      }
+  
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+});
+
 // Insert a single user
 const insertUser = asyncHandler(async(req, res) => {
     try {
@@ -62,10 +81,31 @@ const deleteUser = asyncHandler(async(req, res) =>{
     }
 })
 
+// Delete a single user by email
+const deleteUserByEmail = asyncHandler(async (req, res) => {
+    try {
+      const { email } = req.params;
+      
+      // Assuming you have a 'User' model defined using Mongoose
+      const user = await User.findOneAndDelete({ email });
+  
+      if (!user) {
+        res.status(404);
+        throw new Error(`Cannot find any user with email ${email}`);
+      }
+  
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+});  
+
 
 module.exports = {
     getUser,
+    getUserByEmail,
     insertUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    deleteUserByEmail
 }

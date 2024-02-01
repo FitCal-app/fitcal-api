@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser')
 
 const produstRoute = require('./routes/productRoute');
 const userRoute = require('./routes/userRoute');
 const mealRoute = require('./routes/mealRoute');
+const webhookRoute = require('./routes/webhookRoute');
 
 const errorMiddleware = require('./middleware/errorMiddleware');
 const cors = require('cors');
@@ -20,8 +22,9 @@ var corsOptions = {
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
-app.use(cors(corsOptions));
-app.use(express.json());
+//app.use(cors(corsOptions));
+app.use(cors());
+//app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 
@@ -29,6 +32,7 @@ app.use(express.urlencoded({extended: false}));
 app.use('/api/products', produstRoute);
 app.use('/api/users', userRoute);
 app.use('/api/meals', mealRoute);
+app.use('/api/webhooks', bodyParser.raw({ type: 'application/json' }), webhookRoute);
 
 app.get('/', (req, res) => {
     res.send('Hello node API')

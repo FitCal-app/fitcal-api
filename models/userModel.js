@@ -3,22 +3,27 @@ const Meal = require('./mealModel'); // Import the Meal model
 
 const userSchema = mongoose.Schema(
     {
+        clerkUserId: {
+            type: String,
+            required: true,
+            unique: true
+        },
         email: {
             type: String,
-            required: [true, "Please enter a email address"],
+            required: [false, "Please enter a email address"],
             unique: true
         },
         firstName: {
             type: String,
-            required: [true, "Please enter a first name"]
+            required: [false, "Please enter a first name"]
         },
         lastName : {
             type: String,
-            required: [true, "Please enter a last name"]
+            required: [false, "Please enter a last name"]
         },
         password : {
             type: String,
-            required: [true, "Please enter a password"]
+            required: [false, "Please enter a password"]
         },
         image : {
             type: String,
@@ -26,32 +31,32 @@ const userSchema = mongoose.Schema(
         },
         gender : {
             type: String,
-            required: [true, "Please enter a gender"]
+            required: [false, "Please enter a gender"]
         },
         height: {
             type: Number,
-            required: [true, "Please enter the height"]
+            required: [false, "Please enter the height"]
         },
         weight: {
             type: Number,
-            required: [true, "Please enter the weight"]
+            required: [false, "Please enter the weight"]
         },
         needs: {
             calories: {
                 type: Number,
-                required: true
+                required: false
             },
             carbohydrates: {
                 type: Number,
-                required: true
+                required: false
             },
             proteins: {
                 type: Number,
-                required: true
+                required: false
             },
             fats: {
                 type: Number,
-                required: true
+                required: false
             }
         },
         history: {
