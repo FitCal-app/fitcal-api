@@ -10,68 +10,49 @@ const userSchema = mongoose.Schema(
         },
         email: {
             type: String,
-            required: [false, "Please enter a email address"],
             unique: true
         },
         firstName: {
-            type: String,
-            required: [false, "Please enter a first name"]
+            type: String
         },
         lastName : {
-            type: String,
-            required: [false, "Please enter a last name"]
+            type: String
         },
         password : {
-            type: String,
-            required: [false, "Please enter a password"]
+            type: String
         },
         image : {
-            type: String,
-            required: false
+            type: String
         },
         gender : {
-            type: String,
-            required: [false, "Please enter a gender"]
+            type: String
         },
         height: {
-            type: Number,
-            required: [false, "Please enter the height"]
+            type: Number
         },
         weight: {
-            type: Number,
-            required: [false, "Please enter the weight"]
+            type: Number
         },
         needs: {
             calories: {
-                type: Number,
-                required: false
+                type: Number
             },
             carbohydrates: {
-                type: Number,
-                required: false
+                type: Number
             },
             proteins: {
-                type: Number,
-                required: false
+                type: Number
             },
             fats: {
-                type: Number,
-                required: false
+                type: Number
             }
         },
         history: {
             type: [Meal.schema],
-            required: false,
             defaul: []
         },
         personal_products: {
             type: Array,
-            required: false,
-            defaul: []
-        },
-        scanned_products: {
-            type: Array,
-            required: false,
             defaul: []
         }
     },
