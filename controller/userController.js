@@ -14,22 +14,19 @@ const getUser = asyncHandler(async(req, res) => {
     }
 })
 
-// Get single user by Email
-const getUserByEmail = asyncHandler(async (req, res) => {
+// Get single user by Clerk ID
+const getUserByClerkUserId = asyncHandler(async (req, res) => {
     try {
-      const { email } = req.params;
-      
-      // Assuming you have a 'User' model defined using Mongoose
-      const user = await User.findOne({ email });
-  
-      if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        return;
-      }
-  
-      res.status(200).json(user);
+        const { clerkUserId } = req.params;
+        const user = await User.findOne({ clerkUserId });
+        if (!user) {
+            res.status(404);
+            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+        }
+        res.status(200).json(user);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+        res.status(500);
+        throw new Error(err.message);
     }
 });
 
@@ -64,6 +61,25 @@ const updateUser = asyncHandler(async(req, res) => {
     }
 })
 
+// Update a single user using Clerk User ID
+const updateUserByClerkUserId = asyncHandler(async (req, res) => {
+    try {
+        const { clerkUserId } = req.params;
+        const updatedUser = await User.findOneAndUpdate({ clerkUserId }, req.body, { new: true });
+
+        if (!updatedUser) {
+            res.status(404);
+            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500);
+        throw new Error(err.message);
+    }
+});
+
+
 // Delete a single user
 const deleteUser = asyncHandler(async(req, res) =>{
     try {
@@ -81,31 +97,31 @@ const deleteUser = asyncHandler(async(req, res) =>{
     }
 })
 
-// Delete a single user by email
-const deleteUserByEmail = asyncHandler(async (req, res) => {
+// Delete a single user using Clerk User ID
+const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
     try {
-      const { email } = req.params;
-      
-      // Assuming you have a 'User' model defined using Mongoose
-      const user = await User.findOneAndDelete({ email });
-  
-      if (!user) {
-        res.status(404);
-        throw new Error(`Cannot find any user with email ${email}`);
-      }
-  
-      res.status(200).json(user);
+        const { clerkUserId } = req.params;
+        const user = await User.findOneAndDelete({ clerkUserId });
+
+        if (!user) {
+            res.status(404);
+            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+        }
+
+        res.status(200).json(user);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+        res.status(500);
+        throw new Error(err.message);
     }
-});  
+});
 
 
 module.exports = {
     getUser,
-    getUserByEmail,
+    getUserByClerkUserId,
     insertUser,
     updateUser,
+    updateUserByClerkUserId,
     deleteUser,
-    deleteUserByEmail
+    deleteUserByClerkUserId
 }
