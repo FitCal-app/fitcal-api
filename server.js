@@ -24,14 +24,14 @@ var corsOptions = {
 
 //app.use(cors(corsOptions));
 app.use(cors());
-//app.use(express.json());
+//app.use(express.json());    can't use this with clerk due to the middleware
 app.use(express.urlencoded({extended: false}));
 
 
 // Routes
-app.use('/api/products', produstRoute);
-app.use('/api/users', userRoute);
-app.use('/api/meals', mealRoute);
+app.use('/api/products', bodyParser.json(), produstRoute);
+app.use('/api/users', bodyParser.json(), userRoute);
+app.use('/api/meals', bodyParser.json(), mealRoute);
 app.use('/api/webhooks', bodyParser.raw({ type: 'application/json' }), webhookRoute);
 
 app.get('/', (req, res) => {
