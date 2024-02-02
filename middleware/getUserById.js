@@ -2,14 +2,14 @@ const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 
 const getUserById = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
+    const { clerkUserId } = req.params;
 
-    // Find the user by ID
-    const user = await User.findById(id);
+    // Find the user by Clerk ID
+    const user = await User.findOne({ clerkUserId });
 
     if (!user) {
         res.status(404);
-        throw new Error(`Cannot find any user with ID ${id}`);
+        throw new Error(`Cannot find any user with Clerk ID ${clerkUserId}`);
     }
 
     // Attach the user to the request object

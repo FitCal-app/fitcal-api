@@ -6,19 +6,19 @@ const getUserById = require('../middleware/getUserById');
 
 
 // Middleware to get user by ID
-router.use('/:id', getUserById);
+router.use('/clerk/:clerkUserId', getUserById);
 
 // Get meals from Current Date
-router.get('/:id', getMealFromCurrentDate)
+router.get('/clerk/:clerkUserId', getMealFromCurrentDate)
 
 // Get meals from Date
-router.get('/:id/date/:date', getMealFromDate);
+router.get('/clerk/:clerkUserId/date/:date', getMealFromDate);
 
 // Insert food in a meal
-router.post('/:id/foods', insertFoodIntoMeal);
+router.post('/clerk/:clerkUserId/foods', insertFoodIntoMeal);
 
 // Delete a meal from ID
-router.delete('/:id/:mealId', deleteMeal) // in the body add the meal id
+router.delete('/clerk/:clerkUserId/:mealId', deleteMeal) // in the body add the meal id
 
 
 module.exports = router;
