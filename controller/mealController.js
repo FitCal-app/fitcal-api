@@ -30,11 +30,13 @@ const getMealFromDate = asyncHandler(async (req, res) => {
             throw new Error(`No meals found for the date: ${requestedDate}`);
         }
 
-        res.status(200).json(meals);
+        // Return the first element of the meals array
+        res.status(200).json(meals[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // Get today meals of a user
 const getMealFromCurrentDate = asyncHandler(async (req, res) => {
