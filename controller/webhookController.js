@@ -9,7 +9,8 @@ const postWebhook = async(req, res) => {
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_KEY);
     const evt = wh.verify(payloadString, svixHeaders);
 
-    const { id, ...attributes } = evt.data;
+    const id  = evt.data;
+    console.log(id)
 
     const eventType = evt.type;
 
