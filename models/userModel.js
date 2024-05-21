@@ -8,15 +8,6 @@ const userSchema = mongoose.Schema(
             required: true,
             unique: true
         },
-        image : {
-            type: String
-        },
-        height: {
-            type: Number
-        },
-        weight: {
-            type: Number
-        },
         needs: {
             calories: {
                 type: Number
