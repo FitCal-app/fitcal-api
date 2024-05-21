@@ -14,15 +14,9 @@ const postWebhook = async(req, res) => {
     const eventType = evt.type;
 
     if (eventType === 'user.created') {
-      const email = attributes.email_addresses[0].email_address;
-      const firstName = attributes.first_name;
-      const lastName = attributes.last_name;
 
       const user = new User({
         clerkUserId: id,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
       });
 
       await user.save();
@@ -33,7 +27,6 @@ const postWebhook = async(req, res) => {
       // Update the user in MongoDB based on Clerk User ID
       const updatedUser = await User.findOneAndUpdate(
         { clerkUserId },
-        { $set: { firstName: attributes.first_name, lastName: attributes.last_name } },
         { new: true }
       );
 
