@@ -2,18 +2,6 @@ const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 
 
-// Get single user from ID
-const getUser = asyncHandler(async(req, res) => {
-    try {
-        const {id} = req.params;
-        const user = await User.findById(id);
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
-
 // Get single user by Clerk ID
 const getUserByClerkUserId = asyncHandler(async (req, res) => {
     try {
@@ -117,7 +105,6 @@ const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-    getUser,
     getUserByClerkUserId,
     insertUser,
     updateUser,

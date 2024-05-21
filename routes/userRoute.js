@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { getUser, getUserByClerkUserId, insertUser, updateUser, updateUserByClerkUserId, deleteUser, deleteUserByClerkUserId } = require('../controller/userController')
+const { getUserByClerkUserId, insertUser, updateUser, updateUserByClerkUserId, deleteUser, deleteUserByClerkUserId } = require('../controller/userController')
 
-
-// Get usert from ID
-router.get('/:id', getUser)
 
 // Get usert by using clerkUserId
 router.get('/clerk/:clerkUserId', getUserByClerkUserId)
