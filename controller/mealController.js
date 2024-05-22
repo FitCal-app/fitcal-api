@@ -86,59 +86,111 @@ const deleteMeal = asyncHandler(async (req, res) => {
     }
 });
 
+
+
 // Delete a single food item from a meal on the current date
 const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
     try {
-      const { user } = req;
-      const { mealId, mealType, foodIndex } = req.params;
-      const foodIndexInt = parseInt(foodIndex, 10);
+        const { user } = req;
+        const { mealId, mealType, foodIndex } = req.params;
+        const foodIndexInt = parseInt(foodIndex, 10);
   
-      const currentDate = new Date().toISOString().split("T")[0];
+        const currentDate = new Date().toISOString().split("T")[0];
   
-      // ... (mealType validation remains the same) ...
+        // Validate mealType
+        if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
+            res.status(400);
+            throw new Error("Invalid meal type. Please choose from breakfast, lunch, dinner, or snacks.");
+        }      
   
-      // Find the meal for the current date
-      const mealIndex = user.history.findIndex(
-        (meal) =>
-          new Date(meal.createdAt).toDateString() ===
-            new Date(currentDate).toDateString() &&
-          meal._id.toString() === mealId
-      );
+        // Find the meal for the current date
+        const mealIndex = user.history.findIndex(
+            (meal) =>
+            new Date(meal.createdAt).toDateString() ===
+                new Date(currentDate).toDateString() &&
+            meal._id.toString() === mealId
+        );
   
-      // ... (rest of the food deletion logic is the same as before, 
-      //      including checking if the food exists and removing it) ...
+        if (!meal) {
+            res.status(404);
+            throw new Error(`No meal found for the current date and mealId: ${mealId}`);
+        }
+
+        // Check if the food item exists at the specified index and mealType
+        if (!meal[mealType] || meal[mealType].length <= foodIndexInt) {
+            res.status(404);
+            throw new Error(
+                `No food item found at index ${foodIndex} in meal type ${mealType}`
+            );
+        }
+
+        // Remove the food item from the meal
+        meal[mealType].splice(foodIndexInt, 1);
+        user.history = user.history.filter(item => item[mealType].length > 0);
+
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json(user.history);
     } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-  
-  // Delete a single food item from a meal on a specific date
-  const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
-    try {
-      const { user } = req;
-      const { date, mealId, mealType, foodIndex } = req.params;
-      const foodIndexInt = parseInt(foodIndex, 10);
-  
-      // ... (mealType and date format validations remain the same) ...
-  
-      // Find the meal for the specified date
-      const mealIndex = user.history.findIndex(
-        (meal) =>
-          new Date(meal.createdAt).toDateString() ===
-            new Date(date).toDateString() &&
-          meal._id.toString() === mealId
-      );
-  
-      // ... (rest of the food deletion logic is the same as before) ...
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
   
+// Delete a single food item from a meal on a specific date
+const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
+    try {
+        const { user } = req;
+        const { date, mealId, mealType, foodIndex } = req.params;
+        const foodIndexInt = parseInt(foodIndex, 10);
+
+        // Validate mealType
+        if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
+            res.status(400);
+            throw new Error(
+                "Invalid meal type. Please choose from breakfast, lunch, dinner, or snacks."
+            );
+        }
+
+        // Find the meal for the specified date
+        const mealIndex = user.history.findIndex(
+            (meal) =>
+                new Date(meal.createdAt).toDateString() ===
+                new Date(date).toDateString() &&
+                meal._id.toString() === mealId
+        );
+
+        if (mealIndex === -1) {
+            res.status(404);
+            throw new Error(`No meal found for the date: ${date} and mealId: ${mealId}`);
+        }
+
+        const meal = user.history[mealIndex]; // Retrieve the meal object AFTER finding it
+        // Check if the food item exists at the specified index and mealType
+        if (!meal[mealType] || meal[mealType].length <= foodIndexInt) {
+            res.status(404);
+            throw new Error(
+                `No food item found at index ${foodIndex} in meal type ${mealType}`
+            );
+        }
+
+        // Remove the food item from the meal
+        meal[mealType].splice(foodIndexInt, 1);
+        user.history = user.history.filter(item => item[mealType].length > 0);
+
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json(user.history);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = {
     getMealFromDate,
     getMealFromCurrentDate,
-    deleteFoodFromMealByDate,
     deleteFoodFromCurrentDate,
+    deleteFoodFromMealByDate,
     deleteMeal
 }
