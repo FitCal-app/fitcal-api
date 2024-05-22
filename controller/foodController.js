@@ -15,9 +15,7 @@ const insertFoodIntoMeal = asyncHandler(async (req, res) => {
 
         // Find the index of the meal for the specified date, or create a new one if it doesn't exist
         let mealIndex = user.history.findIndex(meal => new Date(meal.createdAt).toDateString() === new Date(requestedDate).toDateString()); // Convert createdAt to date strings for comparison, ignoring the time
-
-        console.log(requestedDate)
-
+        
         if (mealIndex === -1) {
             // If no meal for the specified date exists, create a new meal object
             const newMeal = {
