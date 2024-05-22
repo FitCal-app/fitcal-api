@@ -126,15 +126,17 @@ const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
 
         // Remove the food item from the meal
         meal[mealType].splice(foodIndexInt, 1);
-        user.history = user.history.filter(item => item[mealType].length > 0);
+        
+        // Update the meal in user.history directly
+        user.history[mealIndex] = meal; 
 
         // Save the updated user
         await user.save();
 
-        res.status(200).json(user.history);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        res.status(200).json(deletedMeal);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
   
 // Delete a single food item from a meal on a specific date
@@ -153,7 +155,7 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
         }
 
         // Find the meal for the specified date
-        const mealIndex = user.history.findIndex(
+        let mealIndex = user.history.findIndex(
             (meal) =>
                 new Date(meal.createdAt).toDateString() ===
                 new Date(date).toDateString() &&
@@ -166,6 +168,7 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
         }
 
         const meal = user.history[mealIndex]; // Retrieve the meal object AFTER finding it
+        
         // Check if the food item exists at the specified index and mealType
         if (!meal[mealType] || meal[mealType].length <= foodIndexInt) {
             res.status(404);
@@ -174,9 +177,16 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
             );
         }
 
-        // Remove the food item from the meal
+        // Remove the food item from the mealType array
         meal[mealType].splice(foodIndexInt, 1);
-        user.history = user.history.filter(item => item[mealType].length > 0);
+
+        // Delete the mealType property if the array is empty
+        if (meal[mealType].length === 0) {
+            delete meal[mealType];
+        }
+        
+        // Update the meal in the user.history array
+        user.history[mealIndex] = meal;
 
         // Save the updated user
         await user.save();
