@@ -20,9 +20,6 @@ router.post('/clerk/:clerkUserId/foods', insertFoodIntoMeal);
 // Insert food in a meal for a speficied date
 router.post('/clerk/:clerkUserId/foods/date/:date', insertFoodIntoMeal);
 
-// Delete a single food item from a meal on the current date by meal ID, meal type, and food index
-router.delete("/clerk/:clerkUserId/foods/:mealId/:mealType/:foodIndex", deleteFoodFromMeal); // Existing route for deleting with date
-
 // Delete a single food item from the current date's meal
 router.delete("/clerk/:clerkUserId/foods/:mealId/:mealType/:foodIndex", deleteFoodFromCurrentDate); // New route
 
