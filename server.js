@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
 
-const produstRoute = require('./routes/productRoute');
 const userRoute = require('./routes/userRoute');
 const mealRoute = require('./routes/mealRoute');
 const webhookRoute = require('./routes/webhookRoute');
@@ -29,7 +28,6 @@ app.use(express.urlencoded({extended: false}));
 
 
 // Routes
-app.use('/api/products', bodyParser.json(), produstRoute);
 app.use('/api/users', bodyParser.json(), userRoute);
 app.use('/api/meals', bodyParser.json(), mealRoute);
 app.use('/api/webhooks', bodyParser.raw({ type: 'application/json' }), webhookRoute);
