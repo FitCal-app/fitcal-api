@@ -21,7 +21,7 @@ const getMealFromDate = asyncHandler(async (req, res) => {
         const startDate = new Date(requestedDate + 'T00:00:00.000Z');
         const endDate = new Date(requestedDate + 'T23:59:59.999Z');
 
-        // Check if user exists in Redis
+        // Check if meal exists in Redis
         let redisKey = 'meal_' + requestedDate + '_' + user.clerkUserId;
         let cachedMeal = await redisClient.get(redisKey);
 
@@ -59,6 +59,15 @@ const getMealFromCurrentDate = asyncHandler(async (req, res) => {
 
         const currentDate = new Date().toISOString().split('T')[0];
 
+        // Check if meal exists in Redis
+        let redisKey = 'meal_' + currentDate + '_' + user.clerkUserId;
+        let cachedMeal = await redisClient.get(redisKey); 
+
+        if (cachedMeal) {
+            res.status(200).json(JSON.parse(cachedMeal));
+            return;
+        }
+
         // Find the meal in the user's history for the current date
         const meal = user.history.find((meal) => {
             const mealDate = meal.createdAt.toISOString().split('T')[0];
@@ -70,36 +79,14 @@ const getMealFromCurrentDate = asyncHandler(async (req, res) => {
             throw new Error("Meal not found for the current date");
         }
 
+        // Store the meal in Redis for future requests with ttl 20min
+        await redisClient.set(redisKey, JSON.stringify(meal), 'EX', 1200);
+
         res.status(200).json(meal);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
-// Delete meal
-const deleteMeal = asyncHandler(async (req, res) => {
-    try {
-        const { user } = req;
-        const mealId = req.params.mealId;
-
-        // Find the index of the meal in the user's history
-        const mealIndex = user.history.findIndex((meal) => meal._id.toString() === mealId);
-
-        if (mealIndex === -1) {
-            res.status(404);
-            throw new Error(`Cannot find any meal with ID ${mealId}`);
-        }
-
-        // Remove the deleted meal from the user's history
-        const deletedMeal = user.history.splice(mealIndex, 1)[0];
-        await user.save();
-
-        res.status(200).json(deletedMeal);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 
 
 // Delete a single food item from a meal on the current date
@@ -110,6 +97,7 @@ const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
         const foodIndexInt = parseInt(foodIndex, 10);
   
         const currentDate = new Date().toISOString().split("T")[0];
+        const redisKey = 'meal_' + currentDate + '_' + user.clerkUserId;
   
         // Validate mealType
         if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
@@ -147,6 +135,17 @@ const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
         // Save the updated user
         await user.save();
 
+        // Check if any food items are left in any of the meals
+        const hasAnyFoods = Object.values(meal).some(foods => foods && foods.length > 0);
+
+        if (!hasAnyFoods) {
+            // If the meal is empty, delete the key from Redis
+            await redisClient.del(redisKey);
+        } else {
+            // Update user in redis as well
+            await redisClient.set(redisKey, JSON.stringify(meal));
+        }
+
         res.status(200).json(deletedMeal);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -159,20 +158,19 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
         const { user } = req;
         const { date, mealId, mealType, foodIndex } = req.params;
         const foodIndexInt = parseInt(foodIndex, 10);
+        const redisKey = 'meal_' + date + '_' + user.clerkUserId;
 
         // Validate mealType
         if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
             res.status(400);
-            throw new Error(
-                "Invalid meal type. Please choose from breakfast, lunch, dinner, or snacks."
-            );
+            throw new Error("Invalid meal type. Please choose from breakfast, lunch, dinner, or snacks.");
         }
 
         // Find the meal for the specified date
-        let mealIndex = user.history.findIndex(
+        const mealIndex = user.history.findIndex(
             (meal) =>
                 new Date(meal.createdAt).toDateString() ===
-                new Date(date).toDateString() &&
+                    new Date(date).toDateString() &&
                 meal._id.toString() === mealId
         );
 
@@ -182,7 +180,7 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
         }
 
         const meal = user.history[mealIndex]; // Retrieve the meal object AFTER finding it
-        
+
         // Check if the food item exists at the specified index and mealType
         if (!meal[mealType] || meal[mealType].length <= foodIndexInt) {
             res.status(404);
@@ -198,14 +196,25 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
         if (meal[mealType].length === 0) {
             delete meal[mealType];
         }
-        
+
         // Update the meal in the user.history array
         user.history[mealIndex] = meal;
 
-        // Save the updated user
+        // Save the updated user in database
         await user.save();
+        
+        // Check if any food items are left in any of the meals
+        const hasAnyFoods = Object.values(meal).some(foods => foods && foods.length > 0);
 
-        res.status(200).json(user.history);
+        if (!hasAnyFoods) {
+            // If the meal is empty, delete the key from Redis
+            await redisClient.del(redisKey);
+        } else {
+            // Update user in redis as well
+            await redisClient.set(redisKey, JSON.stringify(meal));
+        }
+        
+        res.status(200).json(meal);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -215,6 +224,5 @@ module.exports = {
     getMealFromDate,
     getMealFromCurrentDate,
     deleteFoodFromCurrentDate,
-    deleteFoodFromMealByDate,
-    deleteMeal
+    deleteFoodFromMealByDate
 }
