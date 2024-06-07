@@ -41,7 +41,7 @@ const getMealFromDate = asyncHandler(async (req, res) => {
         }
 
         // Store the meal in Redis for future requests with ttl 20min
-        await redisClient.set((user.clerkUserId + '_' + requestedDat), JSON.stringify(meals[0]), 'EX', 1200);
+        await redisClient.set((user.clerkUserId + '_' + requestedDate), JSON.stringify(meals[0]), 'EX', 1200);
 
         // Return the first element of the meals array
         res.status(200).json(meals[0]);
