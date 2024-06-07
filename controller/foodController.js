@@ -1,11 +1,15 @@
 const asyncHandler = require('express-async-handler');
 
+const redisClient = require('../lib/redis.js');
+redisClient.on('error', (error) => console.error(`Redis Error: ${error}`));
+
 // Insert food into a meal
 const insertFoodIntoMeal = asyncHandler(async (req, res) => {
     try {
         const { user } = req;
         const { mealType, food } = req.body;
         const requestedDate = req.params.date || new Date().toISOString().split("T")[0]; // Use specified date or current date if not provided
+        const redisKey = 'meal_' + requestedDate + '_' + user.clerkUserId;
 
         // Validate if the mealType is valid
         if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
@@ -38,6 +42,9 @@ const insertFoodIntoMeal = asyncHandler(async (req, res) => {
 
         // Save the updated user
         await user.save();
+
+        // Store the meal in Redis for future requests with ttl 20min
+        await redisClient.set(redisKey, JSON.stringify(user.history), 'EX', 1200);
 
         res.status(200).json(user.history);
     } catch (err) {
