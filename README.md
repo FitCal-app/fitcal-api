@@ -1,6 +1,6 @@
 # FitCal REST API
 
-![api_scheme](https://github.com/FitCal-app/fitcal-api/assets/39599216/c2ec31c5-a52e-4823-ba78-7ebfcaf37260)
+![api_scheme](https://github.com/FitCal-app/fitcal-api/assets/39599216/3765a638-a060-4bdb-ba64-a0b3d825462c)
 
 ## Run the app
 
