@@ -1,7 +1,7 @@
+const asyncHandler = require('express-async-handler');
+
 const redisClient = require('../lib/redis.js');
 redisClient.on('error', (error) => console.error(`Redis Error: ${error}`));
-
-const asyncHandler = require('express-async-handler');
 
 const getOpenFood = asyncHandler(async (req, res) => {
     try {

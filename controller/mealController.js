@@ -1,6 +1,8 @@
 const Meal = require('../models/mealModel');
 const asyncHandler = require('express-async-handler');
 
+const redisClient = require('../lib/redis.js');
+redisClient.on('error', (error) => console.error(`Redis Error: ${error}`));
 
 // Get meals from Date
 const getMealFromDate = asyncHandler(async (req, res) => {
@@ -19,6 +21,14 @@ const getMealFromDate = asyncHandler(async (req, res) => {
         const startDate = new Date(requestedDate + 'T00:00:00.000Z');
         const endDate = new Date(requestedDate + 'T23:59:59.999Z');
 
+        // Check if user exists in Redis
+        let cachedMeal = await redisClient.get(user.clerkUserId + '_' + requestedDate);
+
+        if (cachedMeal) {
+            res.status(200).json(JSON.parse(cachedMeal));
+            return;
+        }
+
         // Find meals in the user's history within the specified date range
         const meals = user.history.filter((meal) => {
             const mealCreatedAt = meal.createdAt >= startDate && meal.createdAt <= endDate;
@@ -29,6 +39,9 @@ const getMealFromDate = asyncHandler(async (req, res) => {
             res.status(404);
             throw new Error(`No meals found for the date: ${requestedDate}`);
         }
+
+        // Store the meal in Redis for future requests with ttl 20min
+        await redisClient.set((user.clerkUserId + '_' + requestedDat), JSON.stringify(meals[0]), 'EX', 1200);
 
         // Return the first element of the meals array
         res.status(200).json(meals[0]);
