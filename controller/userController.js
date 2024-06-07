@@ -1,9 +1,7 @@
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 
-const Redis = require('ioredis');
-// Create Redis client using IORedis
-const redisClient = new Redis(process.env.REDIS_URL);
+const redisClient = require('../lib/redis.js');
 redisClient.on('error', (error) => console.error(`Redis Error: ${error}`));
 
 // Get single user by Clerk ID

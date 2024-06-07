@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const userRoute = require('./routes/userRoute');
 const mealRoute = require('./routes/mealRoute');
 const webhookRoute = require('./routes/webhookRoute');
+const openFoodRoute = require('./routes/openFoodRoute');
 
 const errorMiddleware = require('./middleware/errorMiddleware');
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use(express.urlencoded({extended: false}));
 app.use('/api/users', bodyParser.json(), userRoute);
 app.use('/api/meals', bodyParser.json(), mealRoute);
 app.use('/api/webhooks', bodyParser.raw({ type: 'application/json' }), webhookRoute);
+app.use('/api/openfood', bodyParser.json(), openFoodRoute);
 
 app.get('/', (req, res) => {
     res.send('Hello node API')
