@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getMealFromDate, getMealFromCurrentDate, deleteFoodFromCurrentDate, deleteFoodFromMealByDate } = require('../controller/mealController')
+const { getMealFromDate, getMealFromCurrentDate, deleteFoodFromCurrentDate, deleteFoodFromMealByDate, deleteMeal } = require('../controller/mealController')
 const { insertFoodIntoMeal } = require('../controller/foodController')
 const getUserById = require('../middleware/getUserById');
 
@@ -25,6 +25,9 @@ router.delete("/clerk/:clerkUserId/foods/:mealId/:mealType/:foodIndex", deleteFo
 
 // Delete a single food item from a meal on a specific date
 router.delete("/clerk/:clerkUserId/foods/date/:date/:mealId/:mealType/:foodIndex", deleteFoodFromMealByDate);
+
+// Delete a meal from ID
+router.delete('/clerk/:clerkUserId/:mealId', deleteMeal) // in the body add the meal id
 
 
 module.exports = router;
