@@ -35,7 +35,7 @@ app.use('/api/webhooks', bodyParser.raw({ type: 'application/json' }), webhookRo
 app.use('/api/openfood', bodyParser.json(), openFoodRoute);
 
 app.get('/', (req, res) => {
-    res.send('Hello node API')
+    res.send('FitCal API')
 })
 
 app.use(errorMiddleware);
