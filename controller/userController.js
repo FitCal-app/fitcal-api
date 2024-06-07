@@ -46,25 +46,6 @@ const insertUser = asyncHandler(async(req, res) => {
     }
 })
 
-// Update a single user
-const updateUser = asyncHandler(async(req, res) => {
-    try {
-        const {id} = req.params;
-        const user = await User.findByIdAndUpdate(id, req.body, { new: true });
-
-        // Cant find user in db with this id
-        if (!user) {
-            res.status(404);
-            throw new Error(`cannot find any user with ID ${id}`);
-        }
-
-        const updatedUser =  await User.findById(id);
-        res.status(200).json(updatedUser);
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
 
 // Update a single user using Clerk User ID
 const updateUserByClerkUserId = asyncHandler(async (req, res) => {
@@ -86,24 +67,6 @@ const updateUserByClerkUserId = asyncHandler(async (req, res) => {
         throw new Error(err.message);
     }
 });
-
-
-// Delete a single user
-const deleteUser = asyncHandler(async(req, res) =>{
-    try {
-        const {id} = req.params;
-        const user = await User.findByIdAndDelete(id);
-        if(!user){
-            res.status(404);
-            throw new Error(`cannot find any user with ID ${id}`);
-        }
-        res.status(200).json(user);
-        
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
 
 // Delete a single user using Clerk User ID
 const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
@@ -130,8 +93,6 @@ const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
 module.exports = {
     getUserByClerkUserId,
     insertUser,
-    updateUser,
     updateUserByClerkUserId,
-    deleteUser,
     deleteUserByClerkUserId
 }
