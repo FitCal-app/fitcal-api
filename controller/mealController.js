@@ -22,7 +22,8 @@ const getMealFromDate = asyncHandler(async (req, res) => {
         const endDate = new Date(requestedDate + 'T23:59:59.999Z');
 
         // Check if user exists in Redis
-        let cachedMeal = await redisClient.get(user.clerkUserId + '_' + requestedDate);
+        let redisKey = 'meal_' + requestedDate + '_' + user.clerkUserId;
+        let cachedMeal = await redisClient.get(redisKey);
 
         if (cachedMeal) {
             res.status(200).json(JSON.parse(cachedMeal));
@@ -41,7 +42,7 @@ const getMealFromDate = asyncHandler(async (req, res) => {
         }
 
         // Store the meal in Redis for future requests with ttl 20min
-        await redisClient.set((user.clerkUserId + '_' + requestedDate), JSON.stringify(meals[0]), 'EX', 1200);
+        await redisClient.set(redisKey, JSON.stringify(meals[0]), 'EX', 1200);
 
         // Return the first element of the meals array
         res.status(200).json(meals[0]);
