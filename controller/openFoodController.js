@@ -25,8 +25,8 @@ const getOpenFood = asyncHandler(async (req, res) => {
             throw new Error(`Cannot find any food with barcode ${barcode}`);
         }
         
-        // Store the food in Redis for future requests with ttl 
-        await redisClient.set(barcode, JSON.stringify(data), 'EX', 600);
+        // Store the food in Redis for future requests with ttl 20min
+        await redisClient.set(barcode, JSON.stringify(data), 'EX', 1200);
 
         res.status(200).json(data);
     } catch (err) {
