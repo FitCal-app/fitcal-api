@@ -38,55 +38,6 @@ const getMealFromDate = asyncHandler(async (req, res) => {
 });
 
 
-// Get today meals of a user
-const getMealFromCurrentDate = asyncHandler(async (req, res) => {
-    try {
-        const { user } = req; // Access the user from req.user
-
-        const currentDate = new Date().toISOString().split('T')[0];
-
-        // Find the meal in the user's history for the current date
-        const meal = user.history.find((meal) => {
-            const mealDate = meal.createdAt.toISOString().split('T')[0];
-            return mealDate === currentDate;
-        });
-
-        if (!meal) {
-            res.status(404);
-            throw new Error("Meal not found for the current date");
-        }
-
-        res.status(200).json(meal);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Delete meal
-const deleteMeal = asyncHandler(async (req, res) => {
-    try {
-        const { user } = req;
-        const mealId = req.params.mealId;
-
-        // Find the index of the meal in the user's history
-        const mealIndex = user.history.findIndex((meal) => meal._id.toString() === mealId);
-
-        if (mealIndex === -1) {
-            res.status(404);
-            throw new Error(`Cannot find any meal with ID ${mealId}`);
-        }
-
-        // Remove the deleted meal from the user's history
-        const deletedMeal = user.history.splice(mealIndex, 1)[0];
-        await user.save();
-
-        res.status(200).json(deletedMeal);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
 
 // Delete a single food item from a meal on the current date
 const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
@@ -199,8 +150,6 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
 
 module.exports = {
     getMealFromDate,
-    getMealFromCurrentDate,
     deleteFoodFromCurrentDate,
-    deleteFoodFromMealByDate,
-    deleteMeal
+    deleteFoodFromMealByDate
 }

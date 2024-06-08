@@ -35,17 +35,6 @@ const getUserByClerkUserId = asyncHandler(async (req, res) => {
     }
 });
 
-// Insert a single user
-const insertUser = asyncHandler(async(req, res) => {
-    try {
-        const user = await User.create(req.body);
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
-    }
-})
-
 
 // Update a single user using Clerk User ID
 const updateUserByClerkUserId = asyncHandler(async (req, res) => {
@@ -92,7 +81,6 @@ const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
 
 module.exports = {
     getUserByClerkUserId,
-    insertUser,
     updateUserByClerkUserId,
     deleteUserByClerkUserId
 }
