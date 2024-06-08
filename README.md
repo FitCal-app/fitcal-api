@@ -2,7 +2,7 @@
 
 ![api_scheme](https://github.com/FitCal-app/fitcal-api/assets/39599216/c9e2b34b-e627-4acf-aa16-4db75b3c1ae2)
 
-Public API available at https://fitcal-api.kevinazemi.com/api
+Public API available at https://fitcal-api.kevinazemi.com/api <br>
 API Documentation available at https://fitcal-docs.kevinazemi.com
 
 ## Run the app
