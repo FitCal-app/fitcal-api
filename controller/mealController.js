@@ -37,58 +37,6 @@ const getMealFromDate = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-// Delete a single food item from a meal on the current date
-const deleteFoodFromCurrentDate = asyncHandler(async (req, res) => {
-    try {
-        const { user } = req;
-        const { mealId, mealType, foodIndex } = req.params;
-        const foodIndexInt = parseInt(foodIndex, 10);
-  
-        const currentDate = new Date().toISOString().split("T")[0];
-  
-        // Validate mealType
-        if (!["breakfast", "lunch", "dinner", "snacks"].includes(mealType)) {
-            res.status(400);
-            throw new Error("Invalid meal type. Please choose from breakfast, lunch, dinner, or snacks.");
-        }      
-  
-        // Find the meal for the current date
-        const mealIndex = user.history.findIndex(
-            (meal) =>
-            new Date(meal.createdAt).toDateString() ===
-                new Date(currentDate).toDateString() &&
-            meal._id.toString() === mealId
-        );
-  
-        if (!meal) {
-            res.status(404);
-            throw new Error(`No meal found for the current date and mealId: ${mealId}`);
-        }
-
-        // Check if the food item exists at the specified index and mealType
-        if (!meal[mealType] || meal[mealType].length <= foodIndexInt) {
-            res.status(404);
-            throw new Error(
-                `No food item found at index ${foodIndex} in meal type ${mealType}`
-            );
-        }
-
-        // Remove the food item from the meal
-        meal[mealType].splice(foodIndexInt, 1);
-        
-        // Update the meal in user.history directly
-        user.history[mealIndex] = meal; 
-
-        // Save the updated user
-        await user.save();
-
-        res.status(200).json(deletedMeal);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
   
 // Delete a single food item from a meal on a specific date
 const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
@@ -150,6 +98,5 @@ const deleteFoodFromMealByDate = asyncHandler(async (req, res) => {
 
 module.exports = {
     getMealFromDate,
-    deleteFoodFromCurrentDate,
     deleteFoodFromMealByDate
 }
