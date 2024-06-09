@@ -18,7 +18,7 @@ API Documentation available at https://fitcal-docs.kevinazemi.com
     FRONTEND=link of your frontend for cors (ex. http://127.0.0.1:3000)
     
     MONGO_URL=your mongodb connection string (ex. mongodb+srv://admin:superStrongPassword@test.mongodb.net/FitCal?retryWrites=true&w=majority)
-    REDIS_URL=your mongodb connection string (ex. redis://default:superStrongPassword@server.redis-cloud.com:14973)
+    REDIS_URL=your redis connection string (ex. redis://default:superStrongPassword@server.redis-cloud.com:14973)
     
     CLERK_WEBHOOK_SECRET_KEY=your clerk webhook secret key
 
