@@ -7,7 +7,7 @@ const getOpenFood = asyncHandler(async (req, res) => {
     try {
         const { barcode } = req.params;
 
-        // Check if user exists in Redis
+        // Check if food exists in Redis
         let redisKey = 'food_' + barcode;
         let cachedFood = await redisClient.get(redisKey);
 

@@ -47,7 +47,7 @@ const updateUserByClerkUserId = asyncHandler(async (req, res) => {
             throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
         }
 
-        // Update user in redis as well
+        // Update user in redis
         await redisClient.set(clerkUserId, JSON.stringify(updatedUser));
 
         res.status(200).json(updatedUser);
@@ -63,7 +63,7 @@ const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
         const { clerkUserId } = req.params;
         const user = await User.findOneAndDelete({ clerkUserId });
 
-        // Delete user from redis as well
+        // Delete user from redis
         await redisClient.del(clerkUserId);
 
         if (!user) {
