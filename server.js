@@ -43,7 +43,7 @@ app.use(errorMiddleware);
 
 mongoose.connect(MONGO_URL)
 .then(() => {
-    console.log('Connected to MongoDB')
+    console.log('Connected to MongoDB SIUUUMMM')
 
     app.listen(PORT, () => {
         console.log(`Listening on port ${PORT}`)
