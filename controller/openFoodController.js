@@ -22,7 +22,7 @@ const getOpenFood = asyncHandler(async (req, res) => {
         const data = await response.json();
 
         // Check for "product not found" from the API
-        if (data.status === 0 && data.status_verbose === "product not found") {
+        if (data.status === 0 && data.status_verbose === "no code or invalid code") {
             // Log the issue for monitoring (optional)
             console.warn(`Product not found in OpenFoodFacts for barcode: ${barcode}`); 
             res.status(404).json({ status: "product not found" }); // Custom error response
@@ -34,8 +34,7 @@ const getOpenFood = asyncHandler(async (req, res) => {
 
         res.status(200).json(data); 
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ message: err.message }); 
     }
 });
 
