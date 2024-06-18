@@ -8,7 +8,7 @@ const getOpenFood = asyncHandler(async (req, res) => {
         const { barcode } = req.params;
 
         // Check if food exists in Redis
-        let redisKey = 'food_' + barcode;
+        const redisKey = 'food_' + barcode;
         let cachedFood = await redisClient.get(redisKey);
 
         if (cachedFood) {
@@ -21,15 +21,18 @@ const getOpenFood = asyncHandler(async (req, res) => {
         );
         const data = await response.json();
 
-        if (!data) {
-            res.status(404);
-            throw new Error(`Cannot find any food with barcode ${barcode}`);
+        // Check for "product not found" from the API
+        if (data.status === 0 && data.status_verbose === "product not found") {
+            // Log the issue for monitoring (optional)
+            console.warn(`Product not found in OpenFoodFacts for barcode: ${barcode}`); 
+            res.status(404).json({ status: "product not found" }); // Custom error response
+            return;
         }
-        
-        // Store the food in Redis for future requests with ttl 20min
-        await redisClient.set(redisKey, JSON.stringify(data), 'EX', 1200);
 
-        res.status(200).json(data);
+        // Cache only if the product was found
+        await redisClient.set(redisKey, JSON.stringify(data), 'EX', 1200); // Cache for 20min
+
+        res.status(200).json(data); 
     } catch (err) {
         res.status(500);
         throw new Error(err.message);
