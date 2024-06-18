@@ -21,8 +21,8 @@ const getUserByClerkUserId = asyncHandler(async (req, res) => {
         const user = await User.findOne({ clerkUserId });
 
         if (!user) {
-            res.status(404);
-            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+            res.status(404).json({ message: `Cannot find any user with Clerk User ID ${clerkUserId}` });
+            return;
         }
         
         // Store the user in Redis for future requests
@@ -30,8 +30,7 @@ const getUserByClerkUserId = asyncHandler(async (req, res) => {
 
         res.status(200).json(user);
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ message: err.message }); 
     }
 });
 
@@ -43,8 +42,8 @@ const updateUserByClerkUserId = asyncHandler(async (req, res) => {
         const updatedUser = await User.findOneAndUpdate({ clerkUserId }, req.body, { new: true });
 
         if (!updatedUser) {
-            res.status(404);
-            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+            res.status(404).json({ message: `Cannot find any user with Clerk User ID ${clerkUserId}` });
+            return;
         }
 
         // Update user in redis
@@ -52,8 +51,7 @@ const updateUserByClerkUserId = asyncHandler(async (req, res) => {
 
         res.status(200).json(updatedUser);
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ message: err.message }); 
     }
 });
 
@@ -67,14 +65,13 @@ const deleteUserByClerkUserId = asyncHandler(async (req, res) => {
         await redisClient.del(clerkUserId);
 
         if (!user) {
-            res.status(404);
-            throw new Error(`Cannot find any user with Clerk User ID ${clerkUserId}`);
+            res.status(404).json({ message: `Cannot find any user with Clerk User ID ${clerkUserId}` });
+            return;
         }
 
         res.status(200).json(user);
     } catch (err) {
-        res.status(500);
-        throw new Error(err.message);
+        res.status(500).json({ message: err.message }); 
     }
 });
 

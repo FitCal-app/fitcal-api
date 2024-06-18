@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
+const http = require('http');
 
 const userRoute = require('./routes/userRoute');
 const mealRoute = require('./routes/mealRoute');
@@ -10,8 +11,6 @@ const openFoodRoute = require('./routes/openFoodRoute');
 
 const errorMiddleware = require('./middleware/errorMiddleware');
 const cors = require('cors');
-
-const app = express();
 
 const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT;
@@ -22,11 +21,12 @@ var corsOptions = {
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
+
+const app = express();
 //app.use(cors(corsOptions));
 app.use(cors());
 //app.use(express.json());    can't use this with clerk due to the middleware
 app.use(express.urlencoded({extended: false}));
-
 
 // Routes
 app.use('/api/users', bodyParser.json(), userRoute);
@@ -41,13 +41,41 @@ app.get('/api', (req, res) => {
 app.use(errorMiddleware);
 
 
-mongoose.connect(MONGO_URL)
-.then(() => {
-    console.log('Connected to MongoDB')
+// Create server instance but DON'T start it yet
+const server = http.createServer(app);
 
-    app.listen(PORT, () => {
-        console.log(`Listening on port ${PORT}`)
-    })
-}).catch((err) => {
-    console.log(err)
-})
+// Wrap the startup logic in an async function
+async function startServer() {
+  try {
+    await mongoose.connect(MONGO_URL);
+    console.log('Connected to MongoDB');
+
+    server.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Error starting the server:', err);
+  }
+}
+
+// Wrap the close logic in an async function
+async function closeServer() {
+  await mongoose.disconnect();
+  return new Promise((resolve, reject) => {
+    server.close(err => {
+      if (err) {
+        console.error('Error closing server:', err);
+        reject(err);
+      } else {
+        console.log('Server closed');
+        resolve();
+      }
+    });
+  });
+}
+
+// Immediately start the server
+startServer();
+
+// Export for testing
+module.exports = { app, startServer, closeServer };
