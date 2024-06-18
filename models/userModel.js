@@ -25,10 +25,6 @@ const userSchema = mongoose.Schema(
         history: {
             type: [Meal.schema],
             defaul: []
-        },
-        personal_products: {
-            type: Array,
-            defaul: []
         }
     },
     {
